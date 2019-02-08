@@ -33,15 +33,19 @@ export default class Child extends React.Component {
       limit: 200
     })
 
-    // return random track from playlist
+    // get random track from playlist
     const tracks = trackData.body.tracks.items
     const track = tracks[Math.floor(Math.random() * tracks.length)].track
+
+    // get analysis of track and add beat info to track object
+    const analysis = await spotifyApi.getAudioAnalysisForTrack(track.id)
+    track.beats = analysis.body.beats
 
     return { track }
   }
 
-  // when component mounts on the client pipe preview MP3 through WebAudio
-  componentDidMount() {
+  // pipe preview MP3 through WebAudio
+  play() {
     const context = new AudioContext()
     const source = context.createBufferSource()
     axios
@@ -64,14 +68,17 @@ export default class Child extends React.Component {
     })
 
     return (
-      <ul>
-        <li>Song: {this.props.track.name}</li>
-        <li>
-          Artists:
-          <ul>{artists}</ul>
-        </li>
-        <li>{this.props.track.preview_url}</li>
-      </ul>
+      <div>
+        <ul>
+          <li>Song: {this.props.track.name}</li>
+          <li>
+            Artists:
+            <ul>{artists}</ul>
+          </li>
+          <li>{this.props.track.preview_url}</li>
+        </ul>
+        <button onClick={this.play.bind(this)}>Play</button>
+      </div>
     )
   }
 }
