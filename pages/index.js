@@ -22,10 +22,16 @@ const Page = ({ track }) => {
   )
 }
 
+// fetch preview mp3 as array buffer, pipe through web audio API, play and analyze
 function play(track) {
   console.log(track.beats)
   const context = new AudioContext()
   const source = context.createBufferSource()
+  const analyzer = context.createAnalyser()
+
+  analyzer.fftSize = 256
+  const dataArray = new Uint8Array(analyzer.frequencyBinCount)
+
   axios
     .get(track.preview_url, {
       responseType: 'arraybuffer'
@@ -33,10 +39,23 @@ function play(track) {
     .then(arrayBuffer => {
       context.decodeAudioData(arrayBuffer.data).then(audioBuffer => {
         source.buffer = audioBuffer
-        source.connect(context.destination)
+        source.connect(analyzer)
+        analyzer.connect(context.destination)
+
+        // play and kick of analysis
         source.start()
+        analyze(analyzer, dataArray)
       })
     })
+}
+
+// analyze frequency spectrum
+function analyze(analyzer, dataArray) {
+  analyzer.getByteFrequencyData(dataArray)
+  console.log(dataArray)
+  requestAnimationFrame(() => {
+    analyze(analyzer, dataArray)
+  })
 }
 
 Page.getInitialProps = async ({ req }) => {
