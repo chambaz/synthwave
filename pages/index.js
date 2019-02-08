@@ -2,40 +2,76 @@ import SpotifyWebApi from 'spotify-web-api-node'
 import axios from 'axios'
 import React from 'react'
 
-const Page = ({ track }) => {
-  return <div>{track.track.name}</div>
-}
+export default class Child extends React.Component {
+  // fetch random track from Spotify Synthwave playlist as props
+  static async getInitialProps({ req }) {
+    const spotifyCreds = {
+      clientId: process.env.clientId,
+      clientSecret: process.env.clientSecret
+    }
 
-Page.getInitialProps = async ({ req }) => {
-  const spotifyCreds = {
-    clientId: process.env.clientId,
-    clientSecret: process.env.clientSecret
+    // first get application access token
+    const spotifyAccess = await axios({
+      url: 'https://accounts.spotify.com/api/token',
+      method: 'post',
+      params: {
+        grant_type: 'client_credentials'
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${Buffer.from(
+          spotifyCreds.clientId + ':' + spotifyCreds.clientSecret
+        ).toString('base64')}`
+      }
+    })
+
+    const spotifyApi = new SpotifyWebApi(spotifyCreds)
+    spotifyApi.setAccessToken(spotifyAccess.data.access_token)
+
+    // fetch Synthwave playlist
+    const trackData = await spotifyApi.getPlaylist('5GBJpEiKMiFy3cBPKR2TaH', {
+      limit: 200
+    })
+
+    // return random track from playlist
+    const tracks = trackData.body.tracks.items
+    const track = tracks[Math.floor(Math.random() * tracks.length)].track
+
+    return { track }
   }
 
-  const spotifyAccess = await axios({
-    url: 'https://accounts.spotify.com/api/token',
-    method: 'post',
-    params: {
-      grant_type: 'client_credentials'
-    },
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${Buffer.from(
-        spotifyCreds.clientId + ':' + spotifyCreds.clientSecret
-      ).toString('base64')}`
-    }
-  })
+  // when component mounts on the client pipe preview MP3 through WebAudio
+  componentDidMount() {
+    const context = new AudioContext()
+    const source = context.createBufferSource()
+    axios
+      .get(this.props.track.preview_url, {
+        responseType: 'arraybuffer'
+      })
+      .then(arrayBuffer => {
+        context.decodeAudioData(arrayBuffer.data).then(audioBuffer => {
+          source.buffer = audioBuffer
+          source.connect(context.destination)
+          source.start()
+        })
+      })
+  }
 
-  const spotifyApi = new SpotifyWebApi(spotifyCreds)
-  spotifyApi.setAccessToken(spotifyAccess.data.access_token)
+  render() {
+    const artists = []
+    this.props.track.artists.forEach((artist, index) => {
+      artists.push(<li key={index}>{artist.name}</li>)
+    })
 
-  const trackData = await spotifyApi.getPlaylist('5GBJpEiKMiFy3cBPKR2TaH', {
-    limit: 200
-  })
-
-  const tracks = trackData.body.tracks.items
-  const track = tracks[Math.floor(Math.random() * tracks.length)]
-  return { track }
+    return (
+      <ul>
+        <li>Song: {this.props.track.name}</li>
+        <li>
+          Artists:
+          <ul>{artists}</ul>
+        </li>
+        <li>{this.props.track.preview_url}</li>
+      </ul>
+    )
+  }
 }
-
-export default Page
