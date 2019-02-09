@@ -1,61 +1,77 @@
+import { useState } from 'react'
 import SpotifyWebApi from 'spotify-web-api-node'
 import axios from 'axios'
 
 const Page = ({ track }) => {
+  const [spectrum, setSpectrum] = useState([])
   const artists = []
+  const buckets = []
+
   track.artists.forEach((artist, index) => {
     artists.push(<li key={index}>{artist.name}</li>)
   })
 
+  spectrum.forEach((bucket, index) => {
+    buckets.push(<li key={index}>{bucket}</li>)
+  })
+
+  // fetch preview mp3 as array buffer, pipe through web audio API, play and analyze
+  function play(track) {
+    const context = new AudioContext()
+    const source = context.createBufferSource()
+    const analyzer = context.createAnalyser()
+
+    analyzer.fftSize = 32
+    let dataArray = new Uint8Array(analyzer.frequencyBinCount)
+
+    axios
+      .get(track.preview_url, {
+        responseType: 'arraybuffer'
+      })
+      .then(arrayBuffer => {
+        context.decodeAudioData(arrayBuffer.data).then(audioBuffer => {
+          source.buffer = audioBuffer
+          source.connect(analyzer)
+          analyzer.connect(context.destination)
+
+          // play and kick of analysis
+          source.start()
+          analyze(analyzer, dataArray)
+        })
+      })
+  }
+
+  // analyze frequency spectrum
+  function analyze(analyzer, dataArray) {
+    analyzer.getByteFrequencyData(dataArray)
+
+    // create array from analyzer output and update state
+    let arr = []
+    dataArray.forEach((bucket, index) => {
+      arr[index] = bucket
+    })
+    setSpectrum(arr)
+
+    requestAnimationFrame(() => {
+      analyze(analyzer, dataArray)
+    })
+  }
+
   return (
     <div>
+      <h1>Track Info</h1>
       <ul>
         <li>Song: {track.name}</li>
         <li>
           Artists:
           <ul>{artists}</ul>
         </li>
-        <li>{track.preview_url}</li>
       </ul>
       <button onClick={() => play(track)}>Play</button>
+      {spectrum.length > 0 && <h2>Analysis</h2>}
+      <ul>{buckets}</ul>
     </div>
   )
-}
-
-// fetch preview mp3 as array buffer, pipe through web audio API, play and analyze
-function play(track) {
-  console.log(track.beats)
-  const context = new AudioContext()
-  const source = context.createBufferSource()
-  const analyzer = context.createAnalyser()
-
-  analyzer.fftSize = 256
-  const dataArray = new Uint8Array(analyzer.frequencyBinCount)
-
-  axios
-    .get(track.preview_url, {
-      responseType: 'arraybuffer'
-    })
-    .then(arrayBuffer => {
-      context.decodeAudioData(arrayBuffer.data).then(audioBuffer => {
-        source.buffer = audioBuffer
-        source.connect(analyzer)
-        analyzer.connect(context.destination)
-
-        // play and kick of analysis
-        source.start()
-        analyze(analyzer, dataArray)
-      })
-    })
-}
-
-// analyze frequency spectrum
-function analyze(analyzer, dataArray) {
-  analyzer.getByteFrequencyData(dataArray)
-  console.log(dataArray)
-  requestAnimationFrame(() => {
-    analyze(analyzer, dataArray)
-  })
 }
 
 Page.getInitialProps = async ({ req }) => {
