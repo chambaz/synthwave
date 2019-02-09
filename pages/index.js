@@ -1,33 +1,34 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import SpotifyWebApi from 'spotify-web-api-node'
 import axios from 'axios'
 
-const Page = ({ track }) => {
+const Page = ({ tracks }) => {
   const [spectrum, setSpectrum] = useState([])
+  const [track, setTrack] = useState(false)
   const video = useRef(null)
   const buckets = []
   const artists = []
 
-  // build artists list
-  track.artists.forEach((artist, index) => {
-    artists.push(`${artist.name}, `)
-  })
-  artists[artists.length - 1] = artists[artists.length - 1].slice(0, -2)
+  // run when track changes
+  useEffect(() => {
+    if (track) {
+      // build artists list
+      track.artists.forEach((artist, index) => {
+        artists.push(`${artist.name}, `)
+      })
+      artists[artists.length - 1] = artists[artists.length - 1].slice(0, -2)
 
-  // build frequency spectrum visual
-  spectrum.forEach((bucket, index) => {
-    buckets.push(
-      <li key={index} className="spectrum__segment">
-        <span
-          className="spectrum__bar"
-          style={{ height: `${(bucket / 255) * 100}%` }}
-        />
-      </li>
-    )
-  })
+      play()
+    }
+  }, [track])
+
+  // update state with new random track
+  function getRandomTrack() {
+    setTrack(tracks[Math.floor(Math.random() * tracks.length)].track)
+  }
 
   // fetch preview mp3 as array buffer, pipe through web audio API, play and analyze
-  function play(track) {
+  function play() {
     const context = new AudioContext()
     const source = context.createBufferSource()
     const analyzer = context.createAnalyser()
@@ -72,19 +73,32 @@ const Page = ({ track }) => {
 
   return (
     <div>
-      <video loop ref={video} className="video" muted>
+      <video
+        loop
+        ref={video}
+        className="video"
+        muted
+        style={{ display: track ? 'block' : 'none' }}>
         <source
           src="https://fpdl.vimeocdn.com/vimeo-prod-src-std-us/videos/a436923734fa43bcaf4b77644ca55f28?token=1549702538-0x97c9cc1bcc7ce3e8fe77d9c255e06a831867ab61"
           type="video/mp4"
         />
       </video>
-      <div className="info">
-        <div className="info__image">
-          <img className="info__img" src={track.album.images[0].url} />
-        </div>
-        <div className="info__content">
-          <h2 className="info__title">{track.name}</h2>
-          <h3 className="info__artists">{artists}</h3>
+      <div className="info" style={{ display: track ? 'block' : 'none' }}>
+        <div className="info__wrapper">
+          <div className="info__image">
+            {track && (
+              <img className="info__img" src={track.album.images[0].url} />
+            )}
+          </div>
+          <div className="info__content">
+            {track && (
+              <div>
+                <h2 className="info__title">{track.name}</h2>
+                <h3 className="info__artists">{artists}</h3>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <button
@@ -92,7 +106,7 @@ const Page = ({ track }) => {
         onClick={e => {
           const node = e.currentTarget
           node.parentElement.removeChild(node)
-          play(track)
+          getRandomTrack()
         }}>
         Play
       </button>
@@ -136,14 +150,18 @@ const Page = ({ track }) => {
         }
 
         .info {
-          display: flex;
           width: 300px;
           position: absolute;
           top: 20px;
           right: 20px;
+          color: white;
+          opacity: 0.5;
+        }
+
+        .info__wrapper {
+          display: flex;
           background: white;
           color: black;
-          opacity: 0.5;
         }
 
         .info__image {
@@ -209,14 +227,13 @@ Page.getInitialProps = async ({ req }) => {
 
   // get random track from playlist
   const tracks = trackData.body.tracks.items
-  const track = tracks[Math.floor(Math.random() * tracks.length)].track
 
   // get analysis of track and add beat info to track object
-  const analysis = await spotifyApi.getAudioAnalysisForTrack(track.id)
-  track.beats = analysis.body.beats
-  track.tempo = analysis.body.track.tempo
+  // const analysis = await spotifyApi.getAudioAnalysisForTrack(track.id)
+  // track.beats = analysis.body.beats
+  // track.tempo = analysis.body.track.tempo
 
-  return { track }
+  return { tracks }
 }
 
 export default Page
