@@ -108,8 +108,8 @@ const Page = ({ track }) => {
 
 Page.getInitialProps = async ({ req }) => {
   const spotifyCreds = {
-    clientId: process.env.clientId,
-    clientSecret: process.env.clientSecret
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET
   }
 
   // first get application access token
