@@ -15,6 +15,7 @@
     "next": "~7.0.2",
     "react": "~16.8.1",
     "react-dom": "~16.8.1",
+    "shuffle-array": "~1.0.1",
     "spotify-web-api-node": "~4.0.0"
   }
 }
