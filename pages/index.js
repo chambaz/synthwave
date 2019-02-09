@@ -79,7 +79,9 @@ const Page = ({ track }) => {
           <h3 className="info__artists">{artists}</h3>
         </div>
       </div>
-      <button onClick={() => play(track)}>Play</button>
+      <button className="btn" onClick={() => play(track)}>
+        Play
+      </button>
       <style jsx global>{`
         body {
           background: black;
@@ -87,28 +89,51 @@ const Page = ({ track }) => {
           font-family: Menlo;
         }
 
+        .btn {
+          border: solid 1px white;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: none;
+          color: white;
+          padding: 20px 50px;
+          text-transform: uppercase;
+          font-size: 18px;
+          outline: none;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+
+        .btn:hover {
+          background: white;
+          color: black;
+        }
+
         .info {
           display: flex;
-          width: 250px;
+          width: 300px;
           position: absolute;
           top: 20px;
           right: 20px;
           background: white;
           color: black;
           opacity: 0.5;
-          height: 100px;
         }
 
         .info__image {
-          width: 111px;
+          width: 40%;
         }
 
         .info__img {
           width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
         .info__content {
           padding: 10px 20px;
+          width: 60%;
         }
 
         .info__title,
