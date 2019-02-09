@@ -4,13 +4,14 @@ import axios from 'axios'
 
 const Page = ({ track }) => {
   const [spectrum, setSpectrum] = useState([])
-  const artists = []
   const buckets = []
+  let artists = []
 
   // build artists list
   track.artists.forEach((artist, index) => {
-    artists.push(<li key={index}>{artist.name}</li>)
+    artists.push(`${artist.name}, `)
   })
+  artists[artists.length - 1] = artists[artists.length - 1].slice(0, -2)
 
   // build frequency spectrum visual
   spectrum.forEach((bucket, index) => {
@@ -69,37 +70,58 @@ const Page = ({ track }) => {
 
   return (
     <div>
-      <h1>Track Info</h1>
-      <ul>
-        <li>Song: {track.name}</li>
-        <li>
-          Artists:
-          <ul>{artists}</ul>
-        </li>
-      </ul>
+      <div className="info">
+        <div className="info__image">
+          <img className="info__img" src={track.album.images[0].url} />
+        </div>
+        <div className="info__content">
+          <h2 className="info__title">{track.name}</h2>
+          <h3 className="info__artists">{artists}</h3>
+        </div>
+      </div>
       <button onClick={() => play(track)}>Play</button>
-      {spectrum.length > 0 && <h2>Analysis</h2>}
-      <ul className="spectrum">{buckets}</ul>
       <style jsx global>{`
-        .spectrum {
-          display: flex;
-          height: 200px;
-          margin: 0;
-          padding: 0;
-        }
-
-        .spectrum__segment {
-          background: gray;
-          display: flex;
-          align-items: flex-end;
-          height: 100%;
-          width: 20px;
-        }
-
-        .spectrum__bar {
+        body {
           background: black;
-          display: block;
+          color: white;
+          font-family: Menlo;
+        }
+
+        .info {
+          display: flex;
+          width: 250px;
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: white;
+          color: black;
+          opacity: 0.5;
+          height: 100px;
+        }
+
+        .info__image {
+          width: 111px;
+        }
+
+        .info__img {
           width: 100%;
+        }
+
+        .info__content {
+          padding: 10px 20px;
+        }
+
+        .info__title,
+        .info__artists {
+          margin: 10px 0;
+        }
+
+        .info__title {
+          font-size: 16px;
+        }
+
+        .info__artists {
+          font-size: 12px;
         }
       `}</style>
     </div>
