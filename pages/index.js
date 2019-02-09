@@ -30,8 +30,8 @@ const Page = ({ track }) => {
     const source = context.createBufferSource()
     const analyzer = context.createAnalyser()
 
-    // frequency analyzer with 128 segments
-    analyzer.fftSize = 256
+    // frequency analyzer with 64 segments
+    analyzer.fftSize = 128
     let dataArray = new Uint8Array(analyzer.frequencyBinCount)
 
     axios
@@ -55,9 +55,9 @@ const Page = ({ track }) => {
   function analyze(analyzer, dataArray) {
     analyzer.getByteFrequencyData(dataArray)
 
-    // create array from middle 32 analyzer segments and update state
+    // create array analyzer segments and update state
     let arr = []
-    dataArray.slice(48, 80).forEach((bucket, index) => {
+    dataArray.slice(8, 48).forEach((bucket, index) => {
       arr[index] = bucket
     })
     setSpectrum(arr)
