@@ -5,9 +5,17 @@ import axios from 'axios'
 const Page = ({ tracks }) => {
   const [spectrum, setSpectrum] = useState([])
   const [track, setTrack] = useState(false)
+  const [bg, setBg] = useState('#000000')
   const video = useRef(null)
-  const buckets = []
   const artists = []
+
+  useEffect(() => {
+    if (spectrum[4] > 200) {
+      setBg('#333333')
+    } else {
+      setBg('#000000')
+    }
+  }, [spectrum])
 
   // run when track changes
   useEffect(() => {
@@ -112,9 +120,10 @@ const Page = ({ tracks }) => {
       </button>
       <style jsx global>{`
         body {
-          background: black;
+          background: ${bg};
           color: white;
           font-family: Menlo;
+          transition: 0.3s;
         }
 
         .video {
