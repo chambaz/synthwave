@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import SpotifyWebApi from 'spotify-web-api-node'
 import axios from 'axios'
 
 const Page = ({ track }) => {
   const [spectrum, setSpectrum] = useState([])
+  const video = useRef(null)
   const buckets = []
-  let artists = []
+  const artists = []
 
   // build artists list
   track.artists.forEach((artist, index) => {
@@ -47,6 +48,7 @@ const Page = ({ track }) => {
 
           // play and kick of analysis
           source.start()
+          video.current.play()
           analyze(analyzer, dataArray)
         })
       })
@@ -70,6 +72,12 @@ const Page = ({ track }) => {
 
   return (
     <div>
+      <video loop ref={video} className="video" muted>
+        <source
+          src="https://fpdl.vimeocdn.com/vimeo-prod-src-std-us/videos/a436923734fa43bcaf4b77644ca55f28?token=1549702538-0x97c9cc1bcc7ce3e8fe77d9c255e06a831867ab61"
+          type="video/mp4"
+        />
+      </video>
       <div className="info">
         <div className="info__image">
           <img className="info__img" src={track.album.images[0].url} />
@@ -79,7 +87,13 @@ const Page = ({ track }) => {
           <h3 className="info__artists">{artists}</h3>
         </div>
       </div>
-      <button className="btn" onClick={() => play(track)}>
+      <button
+        className="btn"
+        onClick={e => {
+          const node = e.currentTarget
+          node.parentElement.removeChild(node)
+          play(track)
+        }}>
         Play
       </button>
       <style jsx global>{`
@@ -87,6 +101,17 @@ const Page = ({ track }) => {
           background: black;
           color: white;
           font-family: Menlo;
+        }
+
+        .video {
+          position: fixed;
+          right: 0;
+          bottom: 0;
+          min-width: 100%;
+          min-height: 100%;
+          width: 1000px;
+          height: auto;
+          z-index: -100;
         }
 
         .btn {
