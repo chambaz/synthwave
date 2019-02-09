@@ -7,12 +7,21 @@ const Page = ({ track }) => {
   const artists = []
   const buckets = []
 
+  // build artists list
   track.artists.forEach((artist, index) => {
     artists.push(<li key={index}>{artist.name}</li>)
   })
 
+  // build frequency spectrum visual
   spectrum.forEach((bucket, index) => {
-    buckets.push(<li key={index}>{bucket}</li>)
+    buckets.push(
+      <li key={index} className="spectrum__segment">
+        <span
+          className="spectrum__bar"
+          style={{ height: `${(bucket / 255) * 100}%` }}
+        />
+      </li>
+    )
   })
 
   // fetch preview mp3 as array buffer, pipe through web audio API, play and analyze
@@ -21,7 +30,8 @@ const Page = ({ track }) => {
     const source = context.createBufferSource()
     const analyzer = context.createAnalyser()
 
-    analyzer.fftSize = 32
+    // frequency analyzer with 128 segments
+    analyzer.fftSize = 256
     let dataArray = new Uint8Array(analyzer.frequencyBinCount)
 
     axios
@@ -45,9 +55,9 @@ const Page = ({ track }) => {
   function analyze(analyzer, dataArray) {
     analyzer.getByteFrequencyData(dataArray)
 
-    // create array from analyzer output and update state
+    // create array from middle 32 analyzer segments and update state
     let arr = []
-    dataArray.forEach((bucket, index) => {
+    dataArray.slice(48, 80).forEach((bucket, index) => {
       arr[index] = bucket
     })
     setSpectrum(arr)
@@ -69,7 +79,29 @@ const Page = ({ track }) => {
       </ul>
       <button onClick={() => play(track)}>Play</button>
       {spectrum.length > 0 && <h2>Analysis</h2>}
-      <ul>{buckets}</ul>
+      <ul className="spectrum">{buckets}</ul>
+      <style jsx global>{`
+        .spectrum {
+          display: flex;
+          height: 200px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .spectrum__segment {
+          background: gray;
+          display: flex;
+          align-items: flex-end;
+          height: 100%;
+          width: 20px;
+        }
+
+        .spectrum__bar {
+          background: black;
+          display: block;
+          width: 100%;
+        }
+      `}</style>
     </div>
   )
 }
