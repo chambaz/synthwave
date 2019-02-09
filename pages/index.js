@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import SpotifyWebApi from 'spotify-web-api-node'
 import axios from 'axios'
-import shuffle from 'shuffle-array'
 
-let trackNum = 0
-
-const Page = ({ track }) => {
+const Page = ({ tracks }) => {
   const [spectrum, setSpectrum] = useState([])
+  const [track, setTrack] = useState(false)
   const [bg, setBg] = useState('#000000')
   const video = useRef(null)
   const artists = []
@@ -19,14 +17,23 @@ const Page = ({ track }) => {
     }
   }, [spectrum])
 
-  // build artists list
-  track.artistsList = []
-  track.artists.forEach((artist, index) => {
-    track.artistsList.push(`${artist.name}, `)
-  })
-  track.artistsList[track.artistsList.length - 1] = track.artistsList[
-    track.artistsList.length - 1
-  ].slice(0, -2)
+  // run when track changes
+  useEffect(() => {
+    if (track) {
+      // build artists list
+      track.artists.forEach((artist, index) => {
+        artists.push(`${artist.name}, `)
+      })
+      artists[artists.length - 1] = artists[artists.length - 1].slice(0, -2)
+
+      play()
+    }
+  }, [track])
+
+  // update state with new random track
+  function getRandomTrack() {
+    setTrack(tracks[Math.floor(Math.random() * tracks.length)].track)
+  }
 
   // fetch preview mp3 as array buffer, pipe through web audio API, play and analyze
   function play() {
@@ -96,7 +103,7 @@ const Page = ({ track }) => {
             {track && (
               <div>
                 <h2 className="info__title">{track.name}</h2>
-                <h3 className="info__artists">{track.artistsList}</h3>
+                <h3 className="info__artists">{artists}</h3>
               </div>
             )}
           </div>
@@ -107,7 +114,7 @@ const Page = ({ track }) => {
         onClick={e => {
           const node = e.currentTarget
           node.parentElement.removeChild(node)
-          play()
+          getRandomTrack()
         }}>
         Play
       </button>
@@ -227,32 +234,15 @@ Page.getInitialProps = async ({ req }) => {
     limit: 200
   })
 
-  // get random tracks from playlist and shuffle
+  // get random track from playlist
   const tracks = trackData.body.tracks.items
-  shuffle(tracks)
 
-  // find track between -8dB and -4dB overall loudness
-  const track = await findLoudTracks(spotifyApi, tracks)
+  // get analysis of track and add beat info to track object
+  // const analysis = await spotifyApi.getAudioAnalysisForTrack(track.id)
+  // track.beats = analysis.body.beats
+  // track.tempo = analysis.body.track.tempo
 
-  return { track }
-}
-
-// loop through tracks and return one between -8dB and -4dB overall loudness
-async function findLoudTracks(spotifyApi, tracks) {
-  const analysis = await spotifyApi.getAudioAnalysisForTrack(
-    tracks[trackNum].track.id
-  )
-
-  if (analysis.body.track.loudness > -8 && analysis.body.track.loudness < -4) {
-    return tracks[trackNum].track
-  }
-
-  trackNum++
-  if (trackNum <= tracks.length - 1) {
-    return findLoudTracks(spotifyApi, tracks)
-  }
-
-  return false
+  return { tracks }
 }
 
 export default Page
