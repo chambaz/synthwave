@@ -21,10 +21,13 @@ const Page = ({ tracks }) => {
   useEffect(() => {
     if (track) {
       // build artists list
+      track.artistsList = []
       track.artists.forEach((artist, index) => {
-        artists.push(`${artist.name}, `)
+        track.artistsList.push(`${artist.name}, `)
       })
-      artists[artists.length - 1] = artists[artists.length - 1].slice(0, -2)
+      track.artistsList[track.artistsList.length - 1] = track.artistsList[
+        track.artistsList.length - 1
+      ].slice(0, -2)
 
       play()
     }
@@ -88,7 +91,7 @@ const Page = ({ tracks }) => {
         muted
         style={{ display: track ? 'block' : 'none' }}>
         <source
-          src="https://fpdl.vimeocdn.com/vimeo-prod-src-std-us/videos/a436923734fa43bcaf4b77644ca55f28?token=1549702538-0x97c9cc1bcc7ce3e8fe77d9c255e06a831867ab61"
+          src="https://www.dropbox.com/s/golvcke0uumlfrh/synthwave.mp4?raw=1"
           type="video/mp4"
         />
       </video>
@@ -103,7 +106,7 @@ const Page = ({ tracks }) => {
             {track && (
               <div>
                 <h2 className="info__title">{track.name}</h2>
-                <h3 className="info__artists">{artists}</h3>
+                <h3 className="info__artists">{track.artistsList}</h3>
               </div>
             )}
           </div>
@@ -131,10 +134,8 @@ const Page = ({ tracks }) => {
           right: 0;
           bottom: 0;
           min-width: 100%;
-          min-height: 100%;
           width: 1000px;
           height: auto;
-          z-index: -100;
         }
 
         .btn {
