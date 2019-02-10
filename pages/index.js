@@ -96,7 +96,7 @@ const Page = ({ spotifyTrack }) => {
   }
 
   return (
-    <div className={restart ? 'video restart' : 'video'}>
+    <div className={restart ? 'restart' : ''}>
       <img
         className="image"
         src="https://www.dropbox.com/s/bgq9zxvhropm4ib/sun.png?raw=1"
