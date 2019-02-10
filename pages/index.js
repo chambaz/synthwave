@@ -6,124 +6,31 @@ const Page = ({ spotifyTrack }) => {
   const [track, setTrack] = useState(false)
   const [spectrum, setSpectrum] = useState([])
   const [hue, setHue] = useState(0)
-  const [box1, setBox1] = useState(false)
-  const [box2, setBox2] = useState(false)
-  const [box3, setBox3] = useState(false)
-  const [box4, setBox4] = useState(false)
-  const [box5, setBox5] = useState(false)
-  const [box6, setBox6] = useState(false)
-  const [box7, setBox7] = useState(false)
-  const [box8, setBox8] = useState(false)
-  const [box9, setBox9] = useState(false)
-  const [box10, setBox10] = useState(false)
-  const [box11, setBox11] = useState(false)
-  const [box12, setBox12] = useState(false)
+  const [shapes, setShapes] = useState({})
   const [restart, setRestart] = useState(false)
   const video = useRef(null)
 
   useEffect(() => {
-    console.log(spectrum.length)
     if (spectrum[4] > 200) {
       setHue(143)
-
-      if (!box1) {
-        setBox1(addShape)
-        setTimeout(() => {
-          setBox1(false)
-        }, 1680)
-      }
-    }
-    if (spectrum[5] > 200) {
-      if (!box2) {
-        setBox2(addShape)
-        setTimeout(() => {
-          setBox2(false)
-        }, 1680)
-      }
+      addShapeToState()
     }
     if (spectrum[8] > 200) {
       setHue(320)
-      if (!box3) {
-        setBox3(addShape)
-        setTimeout(() => {
-          setBox3(false)
-        }, 1680)
-      }
-    }
-    if (spectrum[9] > 200) {
-      if (!box4) {
-        setBox4(addShape)
-        setTimeout(() => {
-          setBox4(false)
-        }, 1680)
-      }
+      addShapeToState()
     }
     if (spectrum[10] > 200) {
       setHue(0)
-      if (!box5) {
-        setBox5(addShape)
-        setTimeout(() => {
-          setBox5(false)
-        }, 1680)
-      }
-    }
-    if (spectrum[11] > 200) {
-      if (!box6) {
-        setBox6(addShape)
-        setTimeout(() => {
-          setBox6(false)
-        }, 1680)
-      }
-    }
-    if (spectrum[13] > 200) {
-      if (!box7) {
-        setBox7(addShape)
-        setTimeout(() => {
-          setBox7(false)
-        }, 1680)
-      }
-    }
-    if (spectrum[15] > 200) {
-      if (!box8) {
-        setBox8(addShape)
-        setTimeout(() => {
-          setBox8(false)
-        }, 1680)
-      }
-    }
-    if (spectrum[18] > 200) {
-      if (!box9) {
-        setBox9(addShape)
-        setTimeout(() => {
-          setBox9(false)
-        }, 1680)
-      }
-    }
-    if (spectrum[20] > 200) {
-      if (!box10) {
-        setBox10(addShape)
-        setTimeout(() => {
-          setBox10(false)
-        }, 1680)
-      }
-    }
-    if (spectrum[25] > 200) {
-      if (!box11) {
-        setBox11(addShape)
-        setTimeout(() => {
-          setBox11(false)
-        }, 1680)
-      }
-    }
-    if (spectrum[30] > 200) {
-      if (!box12) {
-        setBox12(addShape)
-        setTimeout(() => {
-          setBox12(false)
-        }, 1680)
-      }
+      addShapeToState()
     }
   }, [spectrum])
+
+  // clear shapes every two runs
+  useEffect(() => {
+    setInterval(() => {
+      setShapes({})
+    }, 3360)
+  }, [])
 
   // run when track changes
   useEffect(() => {
@@ -173,7 +80,6 @@ const Page = ({ spotifyTrack }) => {
           analyze(analyzer, dataArray)
 
           source.onended = () => {
-            console.log('hello?')
             setRestart(true)
             setTimeout(() => {
               window.location.reload()
@@ -199,64 +105,38 @@ const Page = ({ spotifyTrack }) => {
     })
   }
 
-  function addShape() {
-    return [
-      <img
-        className="box"
-        src={randomShape()}
-        style={{
-          top: `${randomNumber(0, 390)}px`,
-          left: `${randomNumber(0, 100)}%`,
-          transform: `rotate(${randomNumber(0, 360)}deg)`,
-          width: `${randomNumber(20, 90)}px`,
-          filter: `hue-rotate(${randomNumber(100, 300)}deg)`
-        }}
-      />,
-      <img
-        className="box"
-        src={randomShape()}
-        style={{
-          top: `${randomNumber(0, 390)}px`,
-          left: `${randomNumber(0, 100)}%`,
-          transform: `rotate(${randomNumber(0, 360)}deg)`,
-          width: `${randomNumber(20, 90)}px`,
-          filter: `hue-rotate(${randomNumber(100, 300)}deg)`
-        }}
-      />,
-      <img
-        className="box"
-        src={randomShape()}
-        style={{
-          top: `${randomNumber(0, 390)}px`,
-          left: `${randomNumber(0, 100)}%`,
-          transform: `rotate(${randomNumber(0, 360)}deg)`,
-          width: `${randomNumber(20, 90)}px`,
-          filter: `hue-rotate(${randomNumber(100, 300)}deg)`
-        }}
-      />,
-      <img
-        className="box"
-        src={randomShape()}
-        style={{
-          top: `${randomNumber(0, 390)}px`,
-          left: `${randomNumber(0, 100)}%`,
-          transform: `rotate(${randomNumber(0, 360)}deg)`,
-          width: `${randomNumber(20, 90)}px`,
-          filter: `hue-rotate(${randomNumber(100, 300)}deg)`
-        }}
-      />
-    ]
+  // update shape objects with new shape if less than 7 on stage
+  function addShapeToState() {
+    if (Object.keys(shapes).length > 6) {
+      return
+    }
+
+    const index = `shape-${new Date().getTime() + randomNumber(0, 1000)}`
+
+    requestAnimationFrame(() => {
+      let shps = Object.assign({}, shapes)
+      shps[index] = addShape()
+      setShapes(shps)
+    })
   }
 
-  function randomShape() {
-    const shapes = [
+  function addShape() {
+    const shapeImages = [
       'https://www.dropbox.com/s/l97zf5smvzom5m5/circle.gif?raw=1',
       'https://www.dropbox.com/s/5m8z6698dk1ddo7/line.gif?raw=1',
       'https://www.dropbox.com/s/6pxmvls11w9cuos/star.gif?raw=1',
       'https://www.dropbox.com/s/07rq9ojkbie5bvw/triangle.gif?raw=1'
     ]
 
-    return shapes[randomNumber(0, 5)]
+    return {
+      img: shapeImages[Math.floor(Math.random() * shapeImages.length)],
+      top: randomNumber(0, 35),
+      left: randomNumber(0, 100),
+      rotate: randomNumber(0, 360),
+      width: randomNumber(20, 90),
+      hueShift: randomNumber(100, 300),
+      opacity: randomNumber(5, 10) / 10
+    }
   }
 
   function randomNumber(min, max) {
@@ -265,18 +145,20 @@ const Page = ({ spotifyTrack }) => {
 
   return (
     <div className={restart ? 'restart' : ''}>
-      {box1}
-      {box2}
-      {box3}
-      {box4}
-      {box5}
-      {box6}
-      {box7}
-      {box8}
-      {box9}
-      {box10}
-      {box11}
-      {box12}
+      {Object.keys(shapes).map(key => (
+        <img
+          className="box"
+          src={shapes[key].img}
+          style={{
+            top: `${shapes[key].top}%`,
+            left: `${shapes[key].left}%`,
+            transform: `rotate(${shapes[key].rotate}deg)`,
+            width: `${shapes[key].width}px`,
+            filter: `hue-rotate(${shapes[key].hueShift}deg)`,
+            opacity: shapes[key].opacity
+          }}
+        />
+      ))}
       <img
         className="image"
         src="https://www.dropbox.com/s/bgq9zxvhropm4ib/sun.png?raw=1"
@@ -374,6 +256,7 @@ const Page = ({ spotifyTrack }) => {
           cursor: pointer;
           transition: 0.3s;
           z-index: 3;
+          font-family: Menlo;
         }
 
         .btn:hover {
