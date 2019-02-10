@@ -154,7 +154,7 @@ const Page = ({ spotifyTrack }) => {
           top: `${randomNumber(0, 390)}px`,
           left: `${randomNumber(0, 100)}%`,
           transform: `rotate(${randomNumber(0, 360)}deg)`,
-          width: `${randomNumber(30, 100)}px`,
+          width: `${randomNumber(50, 120)}px`,
           filter: `hue-rotate(${randomNumber(100, 300)}deg)`
         }}
       />
