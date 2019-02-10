@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import SpotifyWebApi from 'spotify-web-api-node'
 import axios from 'axios'
 
-const Page = ({ tracks }) => {
+const Page = ({ spotifyTrack }) => {
   const [track, setTrack] = useState(false)
   const [spectrum, setSpectrum] = useState([])
   const [hue, setHue] = useState(0)
@@ -11,10 +11,15 @@ const Page = ({ tracks }) => {
 
   useEffect(() => {
     if (spectrum[4] > 200) {
-      setHue(230)
-    } else if (spectrum[6] > 200) {
+      setHue(247)
+    }
+    if (spectrum[6] > 220) {
+      setHue(143)
+    }
+    if (spectrum[8] > 200) {
       setHue(320)
-    } else {
+    }
+    if (spectrum[10] > 180) {
       setHue(0)
     }
   }, [spectrum])
@@ -37,7 +42,7 @@ const Page = ({ tracks }) => {
 
   // update state with new random track
   function getRandomTrack() {
-    setTrack(tracks[Math.floor(Math.random() * tracks.length)].track)
+    setTrack(spotifyTrack)
   }
 
   // fetch preview mp3 as array buffer, pipe through web audio API, play and analyze
@@ -63,6 +68,7 @@ const Page = ({ tracks }) => {
           // play and kick of analysis
           source.start()
           video.current.play()
+          // video.current.playbackRate = 1 + (track.tempo - 120) / 100
           analyze(analyzer, dataArray)
         })
       })
@@ -88,12 +94,13 @@ const Page = ({ tracks }) => {
     <div>
       <video
         loop
+        preload="true"
         ref={video}
         className="video"
         muted
         style={{ display: track ? 'block' : 'none' }}>
         <source
-          src="https://www.dropbox.com/s/golvcke0uumlfrh/synthwave.mp4?raw=1"
+          src="https://www.dropbox.com/s/29nzctswlv646hw/synthwave.mp4?raw=1"
           type="video/mp4"
         />
       </video>
@@ -137,8 +144,11 @@ const Page = ({ tracks }) => {
           min-width: 100%;
           width: 1000px;
           height: auto;
-          filter: hue-rotate(${hue}deg);
+          filter: brightness(2) hue-rotate(${hue}deg);
           transition: 1s;
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          perspective: 1000;
         }
 
         .btn {
@@ -234,19 +244,23 @@ Page.getInitialProps = async ({ req }) => {
   spotifyApi.setAccessToken(spotifyAccess.data.access_token)
 
   // fetch Synthwave playlist
-  const trackData = await spotifyApi.getPlaylist('5GBJpEiKMiFy3cBPKR2TaH', {
-    limit: 200
-  })
+  const spotifyPlaylist = await spotifyApi.getPlaylist(
+    '5GBJpEiKMiFy3cBPKR2TaH',
+    {
+      limit: 200
+    }
+  )
 
   // get random track from playlist
-  const tracks = trackData.body.tracks.items
+  const spotifyTracks = spotifyPlaylist.body.tracks.items
+  const spotifyTrack =
+    spotifyTracks[Math.floor(Math.random() * spotifyTracks.length)].track
 
   // get analysis of track and add beat info to track object
-  // const analysis = await spotifyApi.getAudioAnalysisForTrack(track.id)
-  // track.beats = analysis.body.beats
-  // track.tempo = analysis.body.track.tempo
+  const analysis = await spotifyApi.getAudioAnalysisForTrack(spotifyTrack.id)
+  spotifyTrack.tempo = analysis.body.track.tempo
 
-  return { tracks }
+  return { spotifyTrack }
 }
 
 export default Page
