@@ -3,17 +3,19 @@ import SpotifyWebApi from 'spotify-web-api-node'
 import axios from 'axios'
 
 const Page = ({ tracks }) => {
-  const [spectrum, setSpectrum] = useState([])
   const [track, setTrack] = useState(false)
-  const [bg, setBg] = useState('#000000')
+  const [spectrum, setSpectrum] = useState([])
+  const [hue, setHue] = useState(0)
   const video = useRef(null)
   const artists = []
 
   useEffect(() => {
     if (spectrum[4] > 200) {
-      setBg('#333333')
+      setHue(230)
+    } else if (spectrum[6] > 200) {
+      setHue(320)
     } else {
-      setBg('#000000')
+      setHue(0)
     }
   }, [spectrum])
 
@@ -123,10 +125,9 @@ const Page = ({ tracks }) => {
       </button>
       <style jsx global>{`
         body {
-          background: ${bg};
+          background: #000;
           color: white;
           font-family: Menlo;
-          transition: 0.3s;
         }
 
         .video {
@@ -136,6 +137,8 @@ const Page = ({ tracks }) => {
           min-width: 100%;
           width: 1000px;
           height: auto;
+          filter: hue-rotate(${hue}deg);
+          transition: 1s;
         }
 
         .btn {
