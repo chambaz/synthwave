@@ -76,7 +76,7 @@ const Page = ({ spotifyTrack }) => {
           // play and kick of analysis
           source.start()
           video.current.play()
-          video.current.playbackRate = 1 + (track.tempo - 120) / 100
+          // video.current.playbackRate = 1 + (track.tempo - 120) / 100
           analyze(analyzer, dataArray)
 
           source.onended = () => {
@@ -122,10 +122,10 @@ const Page = ({ spotifyTrack }) => {
 
   function addShape() {
     const shapeImages = [
-      'https://www.dropbox.com/s/l97zf5smvzom5m5/circle.gif?raw=1',
-      'https://www.dropbox.com/s/5m8z6698dk1ddo7/line.gif?raw=1',
-      'https://www.dropbox.com/s/6pxmvls11w9cuos/star.gif?raw=1',
-      'https://www.dropbox.com/s/07rq9ojkbie5bvw/triangle.gif?raw=1'
+      '/static/circle.gif',
+      '/static/line.gif',
+      '/static/star.gif',
+      '/static/triangle.gif'
     ]
 
     return {
@@ -161,7 +161,7 @@ const Page = ({ spotifyTrack }) => {
       ))}
       <img
         className="image"
-        src="https://www.dropbox.com/s/bgq9zxvhropm4ib/sun.png?raw=1"
+        src="/static/sun.png"
         style={{ display: track ? 'block' : 'none' }}
       />
       <video
@@ -171,10 +171,7 @@ const Page = ({ spotifyTrack }) => {
         className="video"
         muted
         style={{ display: track ? 'block' : 'none' }}>
-        <source
-          src="https://www.dropbox.com/s/29nzctswlv646hw/synthwave.mp4?raw=1"
-          type="video/mp4"
-        />
+        <source src="/static/synthwave.mp4" type="video/mp4" />
       </video>
       <div className="info" style={{ display: track ? 'block' : 'none' }}>
         <div className="info__wrapper">
