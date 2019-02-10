@@ -15,7 +15,6 @@
     "next": "~7.0.2",
     "react": "~16.8.1",
     "react-dom": "~16.8.1",
-    "spotify-web-api-node": "~4.0.0",
-    "vivus": "~0.4.4"
+    "spotify-web-api-node": "~4.0.0"
   }
 }
