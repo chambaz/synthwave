@@ -12,6 +12,12 @@ const Page = ({ spotifyTrack }) => {
   const [box4, setBox4] = useState(false)
   const [box5, setBox5] = useState(false)
   const [box6, setBox6] = useState(false)
+  const [box7, setBox7] = useState(false)
+  const [box8, setBox8] = useState(false)
+  const [box9, setBox9] = useState(false)
+  const [box10, setBox10] = useState(false)
+  const [box11, setBox11] = useState(false)
+  const [box12, setBox12] = useState(false)
   const [restart, setRestart] = useState(false)
   const video = useRef(null)
 
@@ -24,7 +30,7 @@ const Page = ({ spotifyTrack }) => {
         setBox1(addShape)
         setTimeout(() => {
           setBox1(false)
-        }, 3360)
+        }, 1680)
       }
     }
     if (spectrum[5] > 200) {
@@ -32,7 +38,7 @@ const Page = ({ spotifyTrack }) => {
         setBox2(addShape)
         setTimeout(() => {
           setBox2(false)
-        }, 3360)
+        }, 1680)
       }
     }
     if (spectrum[8] > 200) {
@@ -41,7 +47,7 @@ const Page = ({ spotifyTrack }) => {
         setBox3(addShape)
         setTimeout(() => {
           setBox3(false)
-        }, 3360)
+        }, 1680)
       }
     }
     if (spectrum[9] > 200) {
@@ -49,7 +55,7 @@ const Page = ({ spotifyTrack }) => {
         setBox4(addShape)
         setTimeout(() => {
           setBox4(false)
-        }, 3360)
+        }, 1680)
       }
     }
     if (spectrum[10] > 200) {
@@ -58,7 +64,7 @@ const Page = ({ spotifyTrack }) => {
         setBox5(addShape)
         setTimeout(() => {
           setBox5(false)
-        }, 3360)
+        }, 1680)
       }
     }
     if (spectrum[11] > 200) {
@@ -66,7 +72,55 @@ const Page = ({ spotifyTrack }) => {
         setBox6(addShape)
         setTimeout(() => {
           setBox6(false)
-        }, 3360)
+        }, 1680)
+      }
+    }
+    if (spectrum[13] > 200) {
+      if (!box7) {
+        setBox7(addShape)
+        setTimeout(() => {
+          setBox7(false)
+        }, 1680)
+      }
+    }
+    if (spectrum[15] > 200) {
+      if (!box8) {
+        setBox8(addShape)
+        setTimeout(() => {
+          setBox8(false)
+        }, 1680)
+      }
+    }
+    if (spectrum[18] > 200) {
+      if (!box9) {
+        setBox9(addShape)
+        setTimeout(() => {
+          setBox9(false)
+        }, 1680)
+      }
+    }
+    if (spectrum[20] > 200) {
+      if (!box10) {
+        setBox10(addShape)
+        setTimeout(() => {
+          setBox10(false)
+        }, 1680)
+      }
+    }
+    if (spectrum[25] > 200) {
+      if (!box11) {
+        setBox11(addShape)
+        setTimeout(() => {
+          setBox11(false)
+        }, 1680)
+      }
+    }
+    if (spectrum[30] > 200) {
+      if (!box12) {
+        setBox12(addShape)
+        setTimeout(() => {
+          setBox12(false)
+        }, 1680)
       }
     }
   }, [spectrum])
@@ -146,7 +200,7 @@ const Page = ({ spotifyTrack }) => {
   }
 
   function addShape() {
-    return (
+    return [
       <img
         className="box"
         src={randomShape()}
@@ -154,21 +208,55 @@ const Page = ({ spotifyTrack }) => {
           top: `${randomNumber(0, 390)}px`,
           left: `${randomNumber(0, 100)}%`,
           transform: `rotate(${randomNumber(0, 360)}deg)`,
-          width: `${randomNumber(50, 120)}px`,
+          width: `${randomNumber(20, 90)}px`,
+          filter: `hue-rotate(${randomNumber(100, 300)}deg)`
+        }}
+      />,
+      <img
+        className="box"
+        src={randomShape()}
+        style={{
+          top: `${randomNumber(0, 390)}px`,
+          left: `${randomNumber(0, 100)}%`,
+          transform: `rotate(${randomNumber(0, 360)}deg)`,
+          width: `${randomNumber(20, 90)}px`,
+          filter: `hue-rotate(${randomNumber(100, 300)}deg)`
+        }}
+      />,
+      <img
+        className="box"
+        src={randomShape()}
+        style={{
+          top: `${randomNumber(0, 390)}px`,
+          left: `${randomNumber(0, 100)}%`,
+          transform: `rotate(${randomNumber(0, 360)}deg)`,
+          width: `${randomNumber(20, 90)}px`,
+          filter: `hue-rotate(${randomNumber(100, 300)}deg)`
+        }}
+      />,
+      <img
+        className="box"
+        src={randomShape()}
+        style={{
+          top: `${randomNumber(0, 390)}px`,
+          left: `${randomNumber(0, 100)}%`,
+          transform: `rotate(${randomNumber(0, 360)}deg)`,
+          width: `${randomNumber(20, 90)}px`,
           filter: `hue-rotate(${randomNumber(100, 300)}deg)`
         }}
       />
-    )
+    ]
   }
 
   function randomShape() {
     const shapes = [
-      'https://www.dropbox.com/s/w8snaztrvhj53ve/triangle.gif?raw=1',
-      'https://www.dropbox.com/s/uf3cp3v32hb1ukq/line.gif?raw=1',
-      'https://www.dropbox.com/s/uf3cp3v32hb1ukq/line.gif?raw=1'
+      'https://www.dropbox.com/s/l97zf5smvzom5m5/circle.gif?raw=1',
+      'https://www.dropbox.com/s/5m8z6698dk1ddo7/line.gif?raw=1',
+      'https://www.dropbox.com/s/6pxmvls11w9cuos/star.gif?raw=1',
+      'https://www.dropbox.com/s/07rq9ojkbie5bvw/triangle.gif?raw=1'
     ]
 
-    return shapes[randomNumber(0, 4)]
+    return shapes[randomNumber(0, 5)]
   }
 
   function randomNumber(min, max) {
@@ -183,6 +271,12 @@ const Page = ({ spotifyTrack }) => {
       {box4}
       {box5}
       {box6}
+      {box7}
+      {box8}
+      {box9}
+      {box10}
+      {box11}
+      {box12}
       <img
         className="image"
         src="https://www.dropbox.com/s/bgq9zxvhropm4ib/sun.png?raw=1"
