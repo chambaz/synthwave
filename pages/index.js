@@ -145,6 +145,8 @@ const Page = ({ spotifyTrack }) => {
           background: #000;
           color: white;
           font-family: Menlo;
+          height: 100vh;
+          overflow: hidden;
         }
 
         .video {
@@ -188,7 +190,7 @@ const Page = ({ spotifyTrack }) => {
           top: 20px;
           right: 20px;
           color: white;
-          opacity: 0.5;
+          opacity: 0.75;
         }
 
         .info__wrapper {
@@ -226,7 +228,7 @@ const Page = ({ spotifyTrack }) => {
         }
 
         .restart {
-          transition: 5s;
+          transition: 3s;
           opacity: 0;
         }
       `}</style>
