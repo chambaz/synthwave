@@ -6,15 +6,15 @@ const Page = ({ spotifyTrack }) => {
   const [track, setTrack] = useState(false)
   const [spectrum, setSpectrum] = useState([])
   const [hue, setHue] = useState(0)
+  const [restart, setRestart] = useState(false)
   const video = useRef(null)
-  const artists = []
 
   useEffect(() => {
     if (spectrum[4] > 200) {
-      setHue(247)
+      setHue(143)
     }
     if (spectrum[6] > 200) {
-      setHue(143)
+      setHue(247)
     }
     if (spectrum[8] > 200) {
       setHue(320)
@@ -68,8 +68,16 @@ const Page = ({ spotifyTrack }) => {
           // play and kick of analysis
           source.start()
           video.current.play()
-          // video.current.playbackRate = 1 + (track.tempo - 120) / 100
+          video.current.playbackRate = 1 + (track.tempo - 120) / 100
           analyze(analyzer, dataArray)
+
+          source.onended = () => {
+            console.log('hello?')
+            setRestart(true)
+            setTimeout(() => {
+              window.location.reload()
+            }, 5500)
+          }
         })
       })
   }
@@ -96,7 +104,7 @@ const Page = ({ spotifyTrack }) => {
         loop
         preload="true"
         ref={video}
-        className="video"
+        className={restart ? 'video restart' : 'video'}
         muted
         style={{ display: track ? 'block' : 'none' }}>
         <source
@@ -104,7 +112,9 @@ const Page = ({ spotifyTrack }) => {
           type="video/mp4"
         />
       </video>
-      <div className="info" style={{ display: track ? 'block' : 'none' }}>
+      <div
+        className={restart ? 'info restart' : 'info'}
+        style={{ display: track ? 'block' : 'none' }}>
         <div className="info__wrapper">
           <div className="info__image">
             {track && (
@@ -213,6 +223,11 @@ const Page = ({ spotifyTrack }) => {
 
         .info__artists {
           font-size: 12px;
+        }
+
+        .restart {
+          transition: 5s;
+          opacity: 0;
         }
       `}</style>
     </div>
