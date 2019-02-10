@@ -76,7 +76,7 @@ const Page = ({ spotifyTrack }) => {
             setRestart(true)
             setTimeout(() => {
               window.location.reload()
-            }, 5500)
+            }, 3500)
           }
         })
       })
