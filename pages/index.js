@@ -13,13 +13,13 @@ const Page = ({ spotifyTrack }) => {
     if (spectrum[4] > 200) {
       setHue(247)
     }
-    if (spectrum[6] > 220) {
+    if (spectrum[6] > 200) {
       setHue(143)
     }
     if (spectrum[8] > 200) {
       setHue(320)
     }
-    if (spectrum[10] > 180) {
+    if (spectrum[10] > 200) {
       setHue(0)
     }
   }, [spectrum])
