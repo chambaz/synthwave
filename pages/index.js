@@ -100,15 +100,8 @@ const Page = ({ spotifyTrack }) => {
       <img
         className="image"
         src="https://www.dropbox.com/s/bgq9zxvhropm4ib/sun.png?raw=1"
-        style={{ display: track ? 'block' : 'none' }}
       />
-      <video
-        loop
-        preload="true"
-        ref={video}
-        className="video"
-        muted
-        style={{ display: track ? 'block' : 'none' }}>
+      <video loop preload="true" ref={video} className="video" muted>
         <source
           src="https://www.dropbox.com/s/29nzctswlv646hw/synthwave.mp4?raw=1"
           type="video/mp4"
@@ -156,6 +149,7 @@ const Page = ({ spotifyTrack }) => {
           top: 0;
           left: 0;
           z-index: 2;
+          opacity: 0.7;
         }
 
         .video {
