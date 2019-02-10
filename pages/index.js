@@ -13,9 +13,6 @@ const Page = ({ spotifyTrack }) => {
     if (spectrum[4] > 200) {
       setHue(143)
     }
-    if (spectrum[6] > 200) {
-      setHue(247)
-    }
     if (spectrum[8] > 200) {
       setHue(320)
     }
@@ -99,22 +96,18 @@ const Page = ({ spotifyTrack }) => {
   }
 
   return (
-    <div>
-      <video
-        loop
-        preload="true"
-        ref={video}
-        className={restart ? 'video restart' : 'video'}
-        muted
-        style={{ display: track ? 'block' : 'none' }}>
+    <div className={restart ? 'video restart' : 'video'}>
+      <img
+        className="image"
+        src="https://www.dropbox.com/s/bgq9zxvhropm4ib/sun.png?raw=1"
+      />
+      <video loop preload="true" ref={video} className="video" muted>
         <source
           src="https://www.dropbox.com/s/29nzctswlv646hw/synthwave.mp4?raw=1"
           type="video/mp4"
         />
       </video>
-      <div
-        className={restart ? 'info restart' : 'info'}
-        style={{ display: track ? 'block' : 'none' }}>
+      <div className="info" style={{ display: track ? 'block' : 'none' }}>
         <div className="info__wrapper">
           <div className="info__image">
             {track && (
@@ -149,18 +142,27 @@ const Page = ({ spotifyTrack }) => {
           overflow: hidden;
         }
 
+        .image {
+          position: absolute;
+          width: 100%;
+          height: auto;
+          top: 0;
+          left: 0;
+          z-index: 2;
+        }
+
         .video {
-          position: fixed;
+          position: absolute;
           right: 0;
           bottom: 0;
-          min-width: 100%;
-          width: 1000px;
-          height: auto;
-          filter: brightness(2) hue-rotate(${hue}deg);
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          filter: hue-rotate(${hue}deg);
           transition: 1s;
           transform: translateZ(0);
           backface-visibility: hidden;
-          perspective: 1000;
+          perspective: 1000px;
         }
 
         .btn {
@@ -177,6 +179,7 @@ const Page = ({ spotifyTrack }) => {
           outline: none;
           cursor: pointer;
           transition: 0.3s;
+          z-index: 3;
         }
 
         .btn:hover {
@@ -191,6 +194,7 @@ const Page = ({ spotifyTrack }) => {
           right: 20px;
           color: white;
           opacity: 0.75;
+          z-index: 3;
         }
 
         .info__wrapper {
